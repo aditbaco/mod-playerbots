@@ -67,6 +67,12 @@ Player* RandomPlayerbotFactory::CreateRandomBot(WorldSession* session, uint8 cls
         if ((1 << (race - 1)) & sWorld->getIntConfig(CONFIG_CHARACTER_CREATING_DISABLED_RACEMASK))
             continue;
 
+        // skip ARAC custom races (12-21): the server-side CharSections.dbc lacks
+        // full appearance data for them, so random bot creation would crash on the
+        // empty face/hair/facialHair vectors. Players can still create custom races.
+        if (race >= 12)
+            continue;
+
         // Try to get 50/50 faction distribution for random bot population balance.
         // Without this check, races from the faction with more class options would dominate.
         if (alliance == IsAlliance(race))
